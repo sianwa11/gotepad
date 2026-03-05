@@ -24,14 +24,14 @@ type model struct {
 
 }
 
-func (m model) Init() tea.Cmd {
-	return nil
-}
-
 func InitialModel() model {
 	return model{
 		lines: []string{""},
 		cursorRow: 0,
 		cursorCol: 0,
 	}
+}
+
+func (m model) Init() tea.Cmd {
+	return nil
 }
