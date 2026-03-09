@@ -8,34 +8,70 @@ import (
 )
 
 func (m model) View() tea.View {
-
 	var sb strings.Builder
 
-	for rowIdx, line := range m.lines {
-		if rowIdx == m.cursorRow {
-			// this is the line the cursor is on
-			// we render it in three parts: before cursor, the cursor block, after cursor
-			before := line[:m.cursorCol]
-			after := line[m.cursorCol:]
+	rendered := 0
 
-			// If the cursos is at the end of the line, show it as a block on empty space
-			cursorChar := " "
-			if len(after) > 0 {
-				cursorChar = string(after[0])
-				after = after[1:]
-			}
-
-			sb.WriteString(before + fmt.Sprintf("\033[7m%s\033[0m", cursorChar) + after)
-		}else {
-			sb.WriteString(line)
-		}
-		sb.WriteString("\n")
-		
+	if m.viewHeight == 0 {
+		return tea.NewView("viewHeight is 0! WindowSizeMsg not handled")
 	}
 
-		// Simple status line at the bottom
+	for rowIdx, line := range m.lines[m.offsetRow:] {
+		actualRow := rowIdx + m.offsetRow
+
+		if rendered >= m.viewHeight-2 {
+			break
+		}
+
+		// empty line
+		if len(line) == 0 {
+			// is the cursor sitting on this empty line?
+			if actualRow == m.cursorRow {
+				sb.WriteString("\033[7m \033[0m") // draw cursor as highlighted space
+			}
+			sb.WriteString("\n")
+			rendered++
+			continue
+		}
+
+		// chop line into chunks
+		for chunkStart := 0; chunkStart < len(line); chunkStart += m.viewWidth {
+			chunkEnd := chunkStart + m.viewWidth
+			if chunkEnd > len(line) {
+				chunkEnd = len(line)
+			}
+			chunk := line[chunkStart:chunkEnd]
+
+			// is the cursor inside this chunk?
+			if actualRow == m.cursorRow && m.cursorCol >= chunkStart && m.cursorCol <= chunkEnd {
+
+				// find cursor position within just this chunk
+				localCol := m.cursorCol - chunkStart
+
+				before := chunk[:localCol]
+				after := chunk[localCol:]
+
+				// what character is the cursor sitting on?
+				cursorChar := " " // default to space if cursor is at end of line
+				if len(after) > 0 {
+					cursorChar = string(after[0])
+					after = after[1:] // remove it from after since we're drawing it separately
+				}
+
+				sb.WriteString(before + "\033[7m" + cursorChar + "\033[0m" + after)
+
+			} else {
+				// cursor not in this chunk, draw normally
+				sb.WriteString(chunk)
+			}
+
+			sb.WriteString("\n")
+			rendered++
+		}
+	}
+
 	sb.WriteString(fmt.Sprintf("\n-- Ln %d, Col %d --   ctrl+c to quit",
 		m.cursorRow+1, m.cursorCol+1))
 
-		return tea.NewView(sb.String())
+	return tea.NewView(sb.String())
 }

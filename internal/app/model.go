@@ -12,10 +12,10 @@ type model struct {
 	cursorCol  int
 
 	// Viewport (for scrolling)
-	offsetRow  int
+	offsetRow  int // first visible line (for vertical scrolling)
 	offsetCol  int
-	viewWidth  int
-	viewHeight int
+	viewWidth  int // terminal width
+	viewHeight int // terminal height
 
 	// File metadata
 	filename string
