@@ -22,6 +22,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 
+		case "home":
+			m.cursorCol = 0
+
+		case "end":
+			m.cursorCol = len(m.lines[m.cursorRow])
+
 		// Enter (insert a new line)
 		case "enter":
 			currentLine := m.lines[m.cursorRow]
