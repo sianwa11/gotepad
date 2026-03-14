@@ -1,6 +1,8 @@
 package app
 
-import tea "charm.land/bubbletea/v2"
+import (
+	tea "charm.land/bubbletea/v2"
+)
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
@@ -9,6 +11,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.viewWidth = msg.Width
 		m.viewHeight = msg.Height
+
+	case tea.MouseClickMsg:
+		m.setCursorFromClick(msg.X, msg.Y)
 
 	case tea.KeyPressMsg:
 		switch msg.String() {
@@ -109,5 +114,38 @@ func (m *model) scrollToCursor() {
 
 	if m.cursorRow >= m.offsetRow+m.viewHeight-2 {
 		m.offsetRow = m.cursorRow - m.viewHeight + 3
+	}
+}
+
+func (m *model) setCursorFromClick(screenCol, screenRow int) {
+	screenRowSoFar := 0
+
+	for lineIdx, line := range m.lines[m.offsetRow:] {
+		actualLineIdx := m.offsetRow + lineIdx
+
+		rowsThisLineTakes := 1
+		if len(line) > 0 {
+			rowsThisLineTakes = (len(line) + m.viewWidth - 1) / m.viewWidth
+		}
+
+		// does the clicked row fall inside this line?
+		if screenRow < screenRowSoFar+rowsThisLineTakes {
+			m.cursorRow = actualLineIdx // found the line
+
+			chunkIndex := screenRow - screenRowSoFar
+
+			chunkStart := chunkIndex * m.viewWidth
+
+			realCol := chunkStart + screenCol
+
+			if realCol > len(line) {
+				realCol = len(line)
+			}
+
+			m.cursorCol = realCol
+			return
+		}
+
+		screenRowSoFar += rowsThisLineTakes
 	}
 }

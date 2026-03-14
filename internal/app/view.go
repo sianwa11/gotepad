@@ -73,5 +73,7 @@ func (m model) View() tea.View {
 	sb.WriteString(fmt.Sprintf("\n-- Ln %d, Col %d --   ctrl+c to quit",
 		m.cursorRow+1, m.cursorCol+1))
 
-	return tea.NewView(sb.String())
+	v := tea.NewView(sb.String())
+	v.MouseMode = tea.MouseModeCellMotion
+	return v
 }
