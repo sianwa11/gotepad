@@ -13,7 +13,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.viewHeight = msg.Height
 
 	case tea.MouseClickMsg:
-		m.setCursorFromClick(msg.X, msg.Y)
+		if msg.Button == tea.MouseLeft {
+			m.lastClickX = msg.X
+			m.lastClickY = msg.Y
+			m.setCursorFromClick(msg.X, msg.Y-1)
+		}
 
 	case tea.KeyPressMsg:
 		switch msg.String() {
@@ -124,6 +128,7 @@ func (m *model) scrollToCursor() {
 }
 
 func (m *model) setCursorFromClick(screenCol, screenRow int) {
+
 	screenRowSoFar := 0
 
 	for lineIdx, line := range m.lines[m.offsetRow:] {

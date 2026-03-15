@@ -70,8 +70,10 @@ func (m model) View() tea.View {
 		}
 	}
 
-	sb.WriteString(fmt.Sprintf("\n-- Ln %d, Col %d --   ctrl+c to quit",
-		m.cursorRow+1, m.cursorCol+1))
+	// sb.WriteString(fmt.Sprintf("\n-- Ln %d, Col %d --   ctrl+c to quit",
+	// m.cursorRow+1, m.cursorCol+1))
+	sb.WriteString(fmt.Sprintf("\n-- click=(%d,%d) cursorRow=%d cursorCol=%d offsetRow=%d --",
+		m.lastClickX, m.lastClickY, m.cursorRow, m.cursorCol, m.offsetRow))
 
 	v := tea.NewView(sb.String())
 	v.MouseMode = tea.MouseModeCellMotion
