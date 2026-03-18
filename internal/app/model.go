@@ -16,13 +16,20 @@ type model struct {
 	offsetCol  int
 	viewWidth  int // terminal width
 	viewHeight int // terminal height
-	rowOffset  int
-	lastClickX int
-	lastClickY int
 
 	// File metadata
 	filename string
 	saved    bool
+
+	// Copy/Paste
+	selecting      bool
+	selectStartRow int
+	selectStartCol int
+	clipboard      string
+
+	// Debug
+	lastClickX int
+	lastClickY int
 }
 
 func InitialModel() model {
