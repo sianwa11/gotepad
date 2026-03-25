@@ -56,3 +56,35 @@ func (m model) handleSelection(key string) model {
 	}
 	return m
 }
+
+func (m model) selectionBounds() (startRow, startCol, endRow, endCol int) {
+	// cursor is before select start
+	if m.cursorRow < m.selectStartRow || (m.cursorRow == m.selectStartRow && m.cursorCol < m.selectStartCol) {
+		return m.cursorRow, m.cursorCol, m.selectStartRow, m.selectStartCol
+	}
+
+	return m.selectStartRow, m.selectStartCol, m.cursorRow, m.cursorCol
+}
+
+func (m model) isSelected(row, col int) bool {
+	if !m.selecting {
+		return false
+	}
+
+	startRow, startCol, endRow, endCol := m.selectionBounds()
+
+	// is this position between start and end
+	if row < startRow || row > endRow {
+		return false
+	}
+
+	if row == startRow && col < startCol {
+		return false
+	}
+
+	if row == endRow && col >= endCol {
+		return false
+	}
+
+	return true
+}

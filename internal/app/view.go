@@ -42,27 +42,25 @@ func (m model) View() tea.View {
 			}
 			chunk := line[chunkStart:chunkEnd]
 
-			// is the cursor inside this chunk?
-			if actualRow == m.cursorRow && m.cursorCol >= chunkStart && m.cursorCol <= chunkEnd {
+			// draw character by character
+			for i, ch := range chunk {
+				actualCol := chunkStart + i
 
-				// find cursor position within just this chunk
-				localCol := m.cursorCol - chunkStart
-
-				before := chunk[:localCol]
-				after := chunk[localCol:]
-
-				// what character is the cursor sitting on?
-				cursorChar := " " // default to space if cursor is at end of line
-				if len(after) > 0 {
-					cursorChar = string(after[0])
-					after = after[1:] // remove it from after since we're drawing it separately
+				if actualRow == m.cursorRow && actualCol == m.cursorCol {
+					// draw cursor
+					sb.WriteString("\033[7m" + string(ch) + "\033[0m")
+				} else if m.isSelected(actualRow, actualCol) {
+					// draw selected character with blue background
+					sb.WriteString("\033[48;5;24m" + string(ch) + "\033[0m")
+				} else {
+					// draw normally
+					sb.WriteString(string(ch))
 				}
+			}
 
-				sb.WriteString(before + "\033[7m" + cursorChar + "\033[0m" + after)
-
-			} else {
-				// cursor not in this chunk, draw normally
-				sb.WriteString(chunk)
+			// handle cursor at end of line
+			if actualRow == m.cursorRow && m.cursorCol == chunkEnd && chunkEnd == len(line) {
+				sb.WriteString("\033[7m \033[0m")
 			}
 
 			sb.WriteString("\n")
@@ -74,8 +72,8 @@ func (m model) View() tea.View {
 	// m.cursorRow+1, m.cursorCol+1))
 	// sb.WriteString(fmt.Sprintf("\n-- click=(%d,%d) cursorRow=%d cursorCol=%d offsetRow=%d --",
 	// 	m.lastClickX, m.lastClickY, m.cursorRow, m.cursorCol, m.offsetRow))
-	sb.WriteString(fmt.Sprintf("\n-- Ln %d, Col %d | chunk=%d offsetRow=%d --",
-		m.cursorRow+1, m.cursorCol+1, m.cursorCol/m.viewWidth, m.offsetRow))
+	fmt.Fprintf(&sb, "\n-- Ln %d, Col %d | chunk=%d offsetRow=%d --",
+		m.cursorRow+1, m.cursorCol+1, m.cursorCol/m.viewWidth, m.offsetRow)
 
 	v := tea.NewView(sb.String())
 	v.MouseMode = tea.MouseModeCellMotion
