@@ -2,7 +2,7 @@
 
 A terminal-based text editor built from scratch in Go using the [Bubble Tea v2](https://charm.land/bubbletea/v2) TUI framework. Built as a deep dive into Go, TUI architecture, and the data structures behind text editors.
 
-> 🚧 **Work in progress** — core editing features are implemented, more on the way.
+> 🚧 **Work in progress** - core editing features are implemented, more on the way.
 
 ---
 
@@ -26,15 +26,15 @@ A terminal-based text editor built from scratch in Go using the [Bubble Tea v2](
 
 ### ✅ Implemented
 
-- **Multi-line editing** — type, delete, and insert text across multiple lines
-- **Enter / Backspace** — split lines on enter, merge lines on backspace at line start
-- **Arrow key navigation** — move cursor in all directions with proper wrap-aware up/down
-- **Wrap-aware movement** — up/down navigates screen rows, not just document lines, so long wrapped lines feel natural
-- **Viewport scrolling** — documents longer than the terminal height scroll automatically as you type
-- **Line wrapping** — lines wider than the terminal wrap visually without modifying the underlying data
-- **Click to place cursor** — click anywhere on screen to instantly move the cursor there, including on wrapped lines
-- **Home / End keys** — jump to the start or end of a line instantly
-- **Text selection** — hold shift and use arrow keys to select text, with visual blue highlighting
+- **Multi-line editing** - type, delete, and insert text across multiple lines
+- **Enter / Backspace** - split lines on enter, merge lines on backspace at line start
+- **Arrow key navigation** - move cursor in all directions with proper wrap-aware up/down
+- **Wrap-aware movement** - up/down navigates screen rows, not just document lines, so long wrapped lines feel natural
+- **Viewport scrolling** - documents longer than the terminal height scroll automatically as you type
+- **Line wrapping** - lines wider than the terminal wrap visually without modifying the underlying data
+- **Click to place cursor** - click anywhere on screen to instantly move the cursor there, including on wrapped lines
+- **Home / End keys** - jump to the start or end of a line instantly
+- **Text selection** - hold shift and use arrow keys to select text, with visual blue highlighting
 
 ### 🚧 In Progress
 
@@ -101,13 +101,13 @@ gotepad/
 
 This project was built incrementally as a way to learn Go. Key concepts explored:
 
-- **Bubble Tea architecture** — the Model/Update/View pattern for TUI apps
-- **Text buffer management** — storing document content as `[]string` and manipulating it on keypress
-- **Viewport and scrolling** — rendering only the visible portion of a document using an offset
-- **Line wrapping** — chopping lines into screen-width chunks visually without modifying underlying data
-- **Coordinate mapping** — converting between screen coordinates and document coordinates for mouse clicks
-- **Go slice operations** — inserting and deleting from slices without a built-in insert function
-- **Pointer vs value receivers** — learned the hard way when `scrollToCursor` wasn't updating state
+- **Bubble Tea architecture** - the Model/Update/View pattern for TUI apps
+- **Text buffer management** - storing document content as `[]string` and manipulating it on keypress
+- **Viewport and scrolling** - rendering only the visible portion of a document using an offset
+- **Line wrapping** - chopping lines into screen-width chunks visually without modifying underlying data
+- **Coordinate mapping** - converting between screen coordinates and document coordinates for mouse clicks
+- **Go slice operations** - inserting and deleting from slices without a built-in insert function
+- **Pointer vs value receivers** - learned the hard way when `scrollToCursor` wasn't updating state
 
 ---
 
