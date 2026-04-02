@@ -1,60 +1,36 @@
 package app
 
 func (m model) handleSelection(key string) model {
+	// Start selection once; keep extending on subsequent Shift+arrow presses.
+	if !m.selecting {
+		m.selectStartRow = m.cursorRow
+		m.selectStartCol = m.cursorCol
+		m.selecting = true
+	}
 
+	// Reuse normal movement logic so wrapped-line behavior matches regular arrows.
+	moveKey := normalizeShiftKey(key)
+	if moveKey != "" {
+		m = m.handleMovement(moveKey)
+		m.selecting = true
+	}
+
+	return m
+}
+
+func normalizeShiftKey(key string) string {
 	switch key {
 	case "shift+left":
-		if !m.selecting {
-			m.selectStartRow = m.cursorRow
-			m.selectStartCol = m.cursorCol
-			m.selecting = true
-		}
-		// move left
-		if m.cursorCol > 0 {
-			m.cursorCol--
-		}
-
+		return "left"
 	case "shift+right":
-		if !m.selecting {
-			m.selectStartRow = m.cursorRow
-			m.selectStartCol = m.cursorCol
-			m.selecting = true
-		}
-		// move right
-		if m.cursorCol < len(m.lines[m.cursorRow]) {
-			m.cursorCol++
-		}
-
+		return "right"
 	case "shift+up":
-		if !m.selecting {
-			m.selectStartRow = m.cursorRow
-			m.selectStartCol = m.cursorCol
-			m.selecting = true
-			// move up
-			if m.cursorRow > 0 {
-				m.cursorRow--
-				if m.cursorCol > len(m.lines[m.cursorRow]) {
-					m.cursorCol = len(m.lines[m.cursorRow])
-				}
-			}
-		}
-
+		return "up"
 	case "shift+down":
-		if !m.selecting {
-			m.selectStartRow = m.cursorRow
-			m.selectStartCol = m.cursorCol
-			m.selecting = true
-			// move down
-			if m.cursorRow < len(m.lines)-1 {
-				m.cursorRow++
-				if m.cursorCol > len(m.lines[m.cursorRow]) {
-					m.cursorCol = len(m.lines[m.cursorRow])
-				}
-			}
-		}
-
+		return "down"
+	default:
+		return ""
 	}
-	return m
 }
 
 func (m model) selectionBounds() (startRow, startCol, endRow, endCol int) {
