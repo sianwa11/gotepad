@@ -14,6 +14,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case tea.MouseClickMsg:
 		if msg.Button == tea.MouseLeft {
+			m.selecting = false
 			m.lastClickX = msg.X
 			m.lastClickY = msg.Y
 			m.setCursorFromClick(msg.X, msg.Y-1)
