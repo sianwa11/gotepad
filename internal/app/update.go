@@ -20,12 +20,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.setCursorFromClick(msg.X, msg.Y-1)
 		}
 
+	case tea.PasteMsg:
+		m = m.handlePasteText(msg.String())
+
 	case tea.KeyPressMsg:
 		switch msg.String() {
 
 		// Quit
-		case "ctrl+c":
+		case "esc":
 			return m, tea.Quit
+
+		// Copy
+		case "ctrl+c":
+			m = m.handleCopy()
+
+		// Paste
+		case "alt+v":
+			m = m.handlePaste()
 
 		// Movement
 		case "up", "down", "right", "left", "home", "end":
