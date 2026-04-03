@@ -79,6 +79,6 @@ func (m model) renderChunk(sb *strings.Builder, row, chunkStart int, chunk strin
 }
 
 func (m model) renderStatusBar() string {
-	return fmt.Sprintf("\n-- Ln %d, Col %d | chunk=%d offsetRow=%d --",
-		m.cursorRow+1, m.cursorCol+1, m.cursorCol/m.viewWidth, m.offsetRow)
+	return fmt.Sprintf("\n-- Ln %d, Col %d | clip=%d | chunk=%d offsetRow=%d --",
+		m.cursorRow+1, m.cursorCol+1, len(m.clipboard), m.cursorCol/m.viewWidth, m.offsetRow)
 }
