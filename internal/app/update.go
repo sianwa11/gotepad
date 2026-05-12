@@ -38,6 +38,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "alt+v":
 			m = m.handlePaste()
 
+		// Save
+		case "ctrl+s":
+			m = m.handleSave()
+
 		// Movement
 		case "up", "down", "right", "left", "home", "end":
 			m = m.handleMovement(msg.String())
