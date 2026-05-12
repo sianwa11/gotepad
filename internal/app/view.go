@@ -5,12 +5,13 @@ import (
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 )
 
-const (
-	styleReset    = "\033[0m"
-	styleCursor   = "\033[7m"
-	styleSelected = "\033[48;5;24m"
+var (
+	cursorStyle   = lipgloss.NewStyle().Reverse(true)
+	selectedStyle = lipgloss.NewStyle().Background(lipgloss.Color("24"))
+	statusStyle   = lipgloss.NewStyle().Background(lipgloss.Color("24")).Foreground(lipgloss.Color("255"))
 )
 
 func (m model) View() tea.View {
@@ -38,7 +39,7 @@ func (m model) renderLine(sb *strings.Builder, row int, rowsLeft int) int {
 
 	if len(line) == 0 {
 		if row == m.cursorRow {
-			sb.WriteString(styleCursor + " " + styleReset)
+			sb.WriteString(cursorStyle.Render(" "))
 		}
 		sb.WriteString("\n")
 		return 1
@@ -54,7 +55,7 @@ func (m model) renderLine(sb *strings.Builder, row int, rowsLeft int) int {
 		m.renderChunk(sb, row, chunkStart, line[chunkStart:chunkEnd])
 
 		if row == m.cursorRow && m.cursorCol == chunkEnd && chunkEnd == len(line) {
-			sb.WriteString(styleCursor + " " + styleReset)
+			sb.WriteString(cursorStyle.Render(" "))
 		}
 
 		sb.WriteString("\n")
@@ -69,9 +70,9 @@ func (m model) renderChunk(sb *strings.Builder, row, chunkStart int, chunk strin
 		col := chunkStart + i
 		switch {
 		case row == m.cursorRow && col == m.cursorCol:
-			sb.WriteString(styleCursor + string(ch) + styleReset)
+			sb.WriteString(cursorStyle.Render(string(ch)))
 		case m.isSelected(row, col):
-			sb.WriteString(styleSelected + string(ch) + styleReset)
+			sb.WriteString(selectedStyle.Render(string(ch)))
 		default:
 			sb.WriteString(string(ch))
 		}
@@ -79,6 +80,20 @@ func (m model) renderChunk(sb *strings.Builder, row, chunkStart int, chunk strin
 }
 
 func (m model) renderStatusBar() string {
-	return fmt.Sprintf("\n-- Ln %d, Col %d | clip=%d | chunk=%d offsetRow=%d --",
-		m.cursorRow+1, m.cursorCol+1, len(m.clipboard), m.cursorCol/m.viewWidth, m.offsetRow)
+	filename := m.filename
+	if filename == "" {
+		filename = "[No file]"
+	}
+	charCount := 0
+	for _, l := range m.lines {
+		charCount += len(l)
+	}
+
+	w := lipgloss.Width
+
+	left := statusStyle.Padding(0, 1).Render("  " + filename + "  ")
+	right := statusStyle.Padding(0, 1).Render(fmt.Sprintf("Ln %d, Col %d  %d chars", m.cursorRow+1, m.cursorCol+1, charCount))
+	mid := statusStyle.Width(m.viewWidth - w(left) - w(right)).Render("")
+
+	return "\n" + lipgloss.JoinHorizontal(lipgloss.Top, left, mid, right)
 }
