@@ -6,6 +6,9 @@ import (
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
+	m.loadActiveBuffer()
+	defer func() { (&m).saveActiveBuffer() }()
+
 	switch msg := msg.(type) {
 
 	case tea.WindowSizeMsg:
