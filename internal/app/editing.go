@@ -6,6 +6,7 @@ func (m model) handleEditing(msg tea.KeyPressMsg) model {
 
 	switch msg.String() {
 	case "enter":
+		m.saved = false
 		currentLine := m.lines[m.cursorRow]
 		before := currentLine[:m.cursorCol]
 		after := currentLine[m.cursorCol:]
@@ -24,10 +25,12 @@ func (m model) handleEditing(msg tea.KeyPressMsg) model {
 
 	case "backspace":
 		if m.cursorCol > 0 {
+			m.saved = false
 			line := m.lines[m.cursorRow]
 			m.lines[m.cursorRow] = line[:m.cursorCol-1] + line[m.cursorCol:]
 			m.cursorCol--
 		} else if m.cursorRow > 0 {
+			m.saved = false
 			// cursor is at the start of the line - merge this line with the one above
 			above := m.lines[m.cursorRow-1]
 			current := m.lines[m.cursorRow]
@@ -38,6 +41,7 @@ func (m model) handleEditing(msg tea.KeyPressMsg) model {
 		}
 
 	case "space":
+		m.saved = false
 		line := m.lines[m.cursorRow]
 		m.lines[m.cursorRow] = line[:m.cursorCol] + " " + line[m.cursorCol:]
 		m.cursorCol++
@@ -45,6 +49,7 @@ func (m model) handleEditing(msg tea.KeyPressMsg) model {
 	default:
 		char := msg.String()
 		if len(char) == 1 {
+			m.saved = false
 			line := m.lines[m.cursorRow]
 			m.lines[m.cursorRow] = line[:m.cursorCol] + char + line[m.cursorCol:]
 			m.cursorCol++

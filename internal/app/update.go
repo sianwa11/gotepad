@@ -29,6 +29,29 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
 
+		// new tab
+		case "ctrl+n":
+			m.saveActiveBuffer()
+			m.buffers = append(m.buffers, buffer{lines: []string{""}, saved: true})
+			m.activeBuffer = len(m.buffers) - 1
+			m.loadActiveBuffer()
+
+		// next tab
+		case "alt+l", "f7":
+			if len(m.buffers) > 0 {
+				m.saveActiveBuffer()
+				m.activeBuffer = (m.activeBuffer + 1) % len(m.buffers)
+				m.loadActiveBuffer()
+			}
+
+		// prev tab
+		case "alt+h", "f6":
+			if len(m.buffers) > 0 {
+				m.saveActiveBuffer()
+				m.activeBuffer = (m.activeBuffer - 1 + len(m.buffers)) % len(m.buffers)
+				m.loadActiveBuffer()
+			}
+
 		// Quit
 		case "esc":
 			return m, tea.Quit

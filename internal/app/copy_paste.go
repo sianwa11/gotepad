@@ -56,6 +56,7 @@ func (m model) handlePasteText(text string) model {
 		m.lines[m.cursorRow] = before + text + after
 		m.cursorCol += len(text)
 		m.selecting = false
+		m.saved = false
 		return m
 	}
 
@@ -80,6 +81,7 @@ func (m model) handlePasteText(text string) model {
 	m.cursorRow += len(parts) - 1
 	m.cursorCol = len(parts[len(parts)-1])
 	m.selecting = false
+	m.saved = false
 
 	return m
 }
@@ -98,6 +100,7 @@ func (m model) deleteSelection() model {
 		m.cursorRow = startRow
 		m.cursorCol = startCol
 		m.selecting = false
+		m.saved = false
 		return m
 	}
 
@@ -111,5 +114,6 @@ func (m model) deleteSelection() model {
 	m.cursorRow = startRow
 	m.cursorCol = startCol
 	m.selecting = false
+	m.saved = false
 	return m
 }
