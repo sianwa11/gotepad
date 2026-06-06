@@ -6,6 +6,9 @@ import (
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
+	m.loadActiveBuffer()
+	defer func() { (&m).saveActiveBuffer() }()
+
 	switch msg := msg.(type) {
 
 	case tea.WindowSizeMsg:
@@ -26,6 +29,30 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyPressMsg:
 		switch msg.String() {
 
+		// new tab
+		case "ctrl+n":
+			m.saveActiveBuffer()
+			m.buffers = append(m.buffers, buffer{lines: []string{""}, saved: true})
+			m.activeBuffer = len(m.buffers) - 1
+			m.loadActiveBuffer()
+
+		// next tab
+		case "alt+l", "f7":
+			if len(m.buffers) > 0 {
+				m.saveActiveBuffer()
+				m.activeBuffer = (m.activeBuffer + 1) % len(m.buffers)
+				m.loadActiveBuffer()
+			}
+
+		// prev tab
+		case "alt+h", "f6":
+			if len(m.buffers) > 0 {
+				m.saveActiveBuffer()
+				m.activeBuffer = (m.activeBuffer - 1 + len(m.buffers)) % len(m.buffers)
+				m.loadActiveBuffer()
+			}
+
+
 		// Quit
 		case "esc":
 			return m, tea.Quit
@@ -38,6 +65,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "alt+v":
 			m = m.handlePaste()
 
+		// Save
+		case "ctrl+s":
+			m = m.handleSave()
+
 		// Movement
 		case "up", "down", "right", "left", "home", "end":
 			m = m.handleMovement(msg.String())
@@ -48,7 +79,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Regular character typing
 		default:
 			m = m.handleEditing(msg)
-
 		}
 	}
 
