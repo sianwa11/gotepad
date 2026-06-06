@@ -52,6 +52,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.loadActiveBuffer()
 			}
 
+
 		// Quit
 		case "esc":
 			return m, tea.Quit
@@ -78,7 +79,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		// Regular character typing
 		default:
 			m = m.handleEditing(msg)
-
 		}
 	}
 

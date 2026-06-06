@@ -50,6 +50,12 @@ type model struct {
 	buffers      []buffer
 	activeBuffer int
 
+	// prompt state
+	inputMode     bool
+	promptKind    string
+	promptValue   string
+	statusMessage string
+
 	// Copy/Paste
 	selecting      bool
 	selectStartRow int
